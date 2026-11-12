@@ -1,0 +1,874 @@
+<!doctype html>
+<!--
+  ============================================================
+  PATHFINDER — PILOT LANDING PAGE
+  ============================================================
+  LINK PLACEHOLDERS — search & replace each one with the real URL.
+  DONE (2026-11-11): SESSION, LETTER_REVIEW, PREMIUM (cal.com/pathfindermentoring),
+  INSTAGRAM, LINKEDIN.
+  HIDDEN FOR NOW (commented out in the HTML, links still pending):
+  CHECKLIST (hero button + offers card), WAITLIST (section), GUIDE (section).
+
+    #LINK_SESSION         45-min session booking         (navbar, offers, "Not sure" line)
+    #LINK_LETTER_REVIEW   Motivation Letter Review       (hero, offers, final CTA)
+    #LINK_CHECKLIST       Free Application Checklist     (hero, offers)
+    #LINK_PREMIUM         Full Application Support       (offers)
+    #LINK_GUIDE           Erasmus Mundus Application Guide (digital guide section, HIDDEN for now)
+    #LINK_WAITLIST        Waitlist form for future mentors (waitlist)
+    #LINK_INSTAGRAM       Instagram profile              (footer)
+    #LINK_LINKEDIN        LinkedIn profile               (footer)
+
+  PRICES (the only prices on the page):
+    Free Application Checklist         €0
+    Erasmus Mundus Application Guide   €15 (launch price)
+    1:1 Session (45 min)               €30
+    Motivation Letter Review           €70
+    Full Application Support           €150
+
+  CONFIRMED VALUES: letter review rounds within 5 business days;
+  cancel/reschedule up to 24 hours before the call (Cal.com + Stripe refund).
+
+  PHOTOS: the page uses the web-sized copies in brand_assets/photos/web/
+  (originals in brand_assets/photos/ are untouched).
+  ============================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pathfinder — Talk to someone who already did what you want to do</title>
+<meta name="description" content="Erasmus Mundus motivation letter review and application guidance from a scholarship recipient. The Pathfinder pilot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens (from the Pathfinder Brand Book) ---------- */
+  :root {
+    --lavender: #624A7A;
+    --plum: #51326E;
+    --deep: #391D57;      /* logo + headings */
+    --midnight: #231A49;
+    --white: #FFFFFF;
+    --ink: #1A1A1A;       /* text on light */
+
+    /* neutrals taken from the brand book backgrounds */
+    --paper: #F6F6F8;
+    --line: #E4E1EA;
+    --mist: #EFECF3;
+    --muted: #57506A;     /* secondary text on light, 7:1 on paper */
+
+    --gradient: linear-gradient(120deg, var(--lavender) 0%, var(--plum) 30%, var(--deep) 65%, var(--midnight) 100%);
+
+    /* spacing scale */
+    --s1: 4px; --s2: 8px; --s3: 16px; --s4: 24px; --s5: 32px; --s6: 48px; --s7: 72px; --s8: 112px;
+
+    /* radii: images > cards > buttons */
+    --r-img: 20px; --r-card: 16px; --r-btn: 10px;
+
+    /* layered, purple-tinted depth */
+    --lift-1: 0 1px 2px rgba(35,26,73,.05), 0 6px 18px -10px rgba(35,26,73,.18);
+    --lift-2: 0 2px 4px rgba(35,26,73,.06), 0 18px 40px -18px rgba(35,26,73,.32);
+    --lift-3: 0 4px 8px rgba(35,26,73,.10), 0 32px 64px -24px rgba(35,26,73,.45);
+
+    --spring: cubic-bezier(.34,1.4,.64,1);
+    --ease: cubic-bezier(.22,1,.36,1);
+    --wrap: 1160px;
+  }
+
+  /* ---------- Base ---------- */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-optical-sizing: auto; font-size: 17px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; }
+  h1, h2, h3 { margin: 0; color: var(--deep); }
+  h1, h2 { font-weight: 800; letter-spacing: -0.02em; line-height: 1.06; text-wrap: balance; }
+  h2 { font-size: clamp(2rem, 4.2vw, 3rem); }
+  h3 { font-weight: 600; font-size: 1.2rem; line-height: 1.3; letter-spacing: -0.005em; }
+  p { margin: 0; }
+  ul { margin: 0; padding: 0; }
+
+  .wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--s3); }
+  @media (min-width: 700px) { .wrap { padding-inline: var(--s5); } }
+
+  .section { padding-block: var(--s7); }
+  @media (min-width: 900px) { .section { padding-block: var(--s8); } }
+
+  .lede { font-size: 1.125rem; color: var(--muted); max-width: 60ch; margin-top: var(--s3); }
+  .section-head { max-width: 720px; margin-bottom: var(--s6); }
+
+  .skip { position: absolute; left: -9999px; top: 8px; z-index: 100; background: var(--white); color: var(--deep); padding: var(--s2) var(--s3); border-radius: var(--r-btn); font-weight: 600; }
+  .skip:focus { left: 8px; }
+
+  :focus-visible { outline: 3px solid var(--lavender); outline-offset: 3px; border-radius: 4px; }
+  .on-dark :focus-visible, .on-dark:focus-visible { outline-color: var(--white); }
+
+  /* Placeholder marker — deliberately loud so nothing ships by accident */
+  .ph {
+    border: 2px dashed var(--lavender); border-radius: 12px; padding: var(--s3);
+    background: repeating-linear-gradient(-45deg, rgba(98,74,122,.05) 0 10px, transparent 10px 20px);
+    color: var(--lavender); font-weight: 600; font-size: .95rem;
+  }
+  .ph-inline { color: var(--lavender); font-weight: 600; border-bottom: 2px dashed currentColor; }
+  .on-dark .ph-inline { color: #E3D9EE; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--s2);
+    min-height: 48px; padding: 12px 22px; border-radius: var(--r-btn);
+    font-family: inherit; font-weight: 600; font-size: 1rem; line-height: 1.2; text-decoration: none; cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform .35s var(--spring), opacity .2s var(--ease);
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(1px) scale(.98); transition-duration: .08s; }
+  .btn-primary { background: var(--deep); color: var(--white); box-shadow: var(--lift-1); }
+  .btn-primary:hover { background: var(--plum); }
+  .btn-light { background: var(--white); color: var(--deep); box-shadow: 0 10px 30px -12px rgba(0,0,0,.45); }
+  .btn-light:hover { background: var(--mist); }
+  .btn-ghost-light { background: transparent; color: var(--white); border-color: rgba(255,255,255,.55); }
+  .btn-ghost-light:hover { border-color: var(--white); background: rgba(255,255,255,.08); }
+  .btn-outline { background: var(--white); color: var(--deep); border-color: var(--deep); }
+  .btn-outline:hover { background: var(--mist); }
+  .btn-block { width: 100%; }
+
+  /* ---------- Navbar ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(246,246,248,.86); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: var(--s4); }
+  .nav-logo { display: inline-flex; padding: 6px 0; }
+  .nav-logo img { height: 24px; width: auto; }
+  .nav-links { display: none; list-style: none; gap: var(--s5); align-items: center; }
+  .nav-links a { text-decoration: none; font-weight: 600; font-size: .95rem; color: var(--deep); padding: 6px 2px; position: relative; }
+  .nav-links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--lavender); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a:active { opacity: .7; }
+  .nav-cta { display: none; min-height: 42px; padding: 9px 18px; font-size: .95rem; }
+  .menu-btn {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+    background: transparent; border: 1px solid var(--line); border-radius: var(--r-btn); color: var(--deep); cursor: pointer;
+    transition: transform .3s var(--spring);
+  }
+  .menu-btn:hover { background: var(--mist); }
+  .menu-btn:active { transform: scale(.94); }
+  .menu-btn .bar { display: block; width: 18px; height: 2px; background: currentColor; position: relative; transition: transform .3s var(--ease), opacity .2s; }
+  .menu-btn .bar::before, .menu-btn .bar::after { content: ""; position: absolute; left: 0; width: 18px; height: 2px; background: currentColor; transition: transform .3s var(--ease); }
+  .menu-btn .bar::before { transform: translateY(-6px); }
+  .menu-btn .bar::after { transform: translateY(6px); }
+  .menu-btn[aria-expanded="true"] .bar { background: transparent; }
+  .menu-btn[aria-expanded="true"] .bar::before { transform: rotate(45deg); }
+  .menu-btn[aria-expanded="true"] .bar::after { transform: rotate(-45deg); }
+
+  .mobile-menu { border-top: 1px solid var(--line); background: var(--paper); }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu ul { list-style: none; padding: var(--s3) 0 var(--s4); display: grid; gap: var(--s1); }
+  .mobile-menu a:not(.btn) { display: block; padding: 12px 0; font-weight: 600; text-decoration: none; color: var(--deep); font-size: 1.05rem; }
+  .mobile-menu a:not(.btn):active { opacity: .6; }
+  .mobile-menu .btn { margin-top: var(--s2); width: 100%; }
+
+  @media (min-width: 900px) {
+    .nav-links, .nav-cta { display: flex; }
+    .menu-btn, .mobile-menu { display: none !important; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; overflow: hidden; color: var(--white); background: var(--midnight); isolation: isolate; }
+  .hero::before { /* layered gradient: brand diagonal + two soft radial glows */
+    content: ""; position: absolute; inset: 0; z-index: -2;
+    background:
+      radial-gradient(60% 70% at 12% 10%, rgba(140,110,170,.45), transparent 60%),
+      radial-gradient(50% 60% at 95% 100%, rgba(20,14,48,.75), transparent 70%),
+      var(--gradient);
+  }
+  .grain { position: absolute; inset: 0; z-index: -1; opacity: .09; mix-blend-mode: overlay; pointer-events: none; }
+  .hero-inner { display: grid; gap: var(--s6); padding-block: var(--s6) var(--s7); align-items: center; }
+  .hero-copy { position: relative; z-index: 1; }
+  .pilot-note {
+    display: inline-flex; align-items: center; gap: 10px; font-size: .9rem; font-weight: 600;
+    padding: 6px 14px 6px 8px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    margin-bottom: var(--s4);
+  }
+  .pilot-note .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--white); color: var(--deep); display: grid; place-items: center; font-weight: 800; font-size: .72rem; }
+  .hero h1 { color: var(--white); font-size: clamp(2.6rem, 6.4vw, 4.6rem); line-height: 1.02; max-width: 14ch; }
+  .hero-sub { margin-top: var(--s4); font-size: 1.15rem; line-height: 1.6; max-width: 46ch; color: rgba(255,255,255,.88); }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s5); }
+  .hero-ctas .btn { flex: 1 1 220px; }
+  @media (min-width: 520px) { .hero-ctas .btn { flex: 0 0 auto; } }
+
+  .hero-photo { position: relative; justify-self: center; width: min(100%, 420px); }
+  .hero-frame {
+    position: relative; aspect-ratio: 4 / 5; border-radius: var(--r-img); overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,.2), 0 40px 80px -30px rgba(10,6,30,.8);
+    outline: 1px solid rgba(255,255,255,.18); outline-offset: -1px;
+  }
+  .hero-frame img {
+    /* tight crop on face + shoulders (source px ~182–758 × 380–1100), hides the rust-coloured building edges */
+    position: absolute; max-width: none; width: 185%; height: auto; left: -31.6%; top: -52.7%;
+  }
+  .hero-frame::after { /* gentle tie-in to the brand palette at the base of the photo */
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(35,26,73,.55), rgba(35,26,73,0) 38%);
+  }
+  .hero-path { position: absolute; pointer-events: none; z-index: 0; }
+  .hero-path--desk { display: none; }
+  @media (min-width: 900px) {
+    .hero-inner { grid-template-columns: 1.15fr .85fr; padding-block: var(--s7) var(--s8); gap: var(--s7); }
+    .hero-photo { justify-self: end; }
+    .hero-path--desk { display: block; right: 2%; top: 4%; width: 46%; height: 92%; }
+  }
+
+  /* ---------- Problem ---------- */
+  .problem-grid { display: grid; gap: var(--s5); }
+  .sources { list-style: none; display: grid; gap: var(--s3); }
+  .source {
+    display: grid; grid-template-columns: 44px 1fr; gap: var(--s3); align-items: start;
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s4);
+    box-shadow: var(--lift-1);
+  }
+  .source-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--mist); color: var(--deep); display: grid; place-items: center; }
+  .source h3 { font-size: 1.05rem; }
+  .source p { color: var(--muted); font-size: 1rem; margin-top: 2px; }
+  @media (min-width: 900px) {
+    .sources { grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+    .source { grid-template-columns: 1fr; align-content: start; }
+  }
+
+  /* ---------- Offers ---------- */
+  .offers { background: var(--white); border-block: 1px solid var(--line); }
+  .plans { display: grid; gap: var(--s5); align-items: start; }
+  /* While the free checklist card is hidden, the plans use one column.
+     When it comes back, replace the next rule with:
+     @media (min-width: 960px) { .plans { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--s6); } } */
+  .plans, .offer-note { max-width: 760px; }
+
+  /* plan selector (tabs) */
+  .plan-tabs {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 6px; margin-top: 14px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
+  }
+  .plan-tab {
+    position: relative; display: grid; gap: 2px; justify-items: center; padding: 16px 6px 14px;
+    background: transparent; border: 1px solid transparent; border-radius: 12px; cursor: pointer;
+    font-family: inherit; color: var(--deep); text-align: center;
+    transition: transform .3s var(--spring);
+  }
+  .plan-tab:hover { background: var(--white); border-color: var(--line); }
+  .plan-tab:active { transform: scale(.97); }
+  .plan-tab[aria-selected="true"] { background: var(--deep); border-color: var(--deep); color: var(--white); box-shadow: var(--lift-2); }
+  .plan-tab-name { font-weight: 600; font-size: .9rem; line-height: 1.2; }
+  .plan-tab-price { font-weight: 800; font-size: 1.4rem; line-height: 1.1; letter-spacing: -0.02em; }
+  .tab-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+    font-size: .72rem; font-weight: 600; line-height: 1.4; color: var(--deep); background: var(--white);
+    border: 1px solid var(--line); padding: 2px 9px; border-radius: 999px; box-shadow: var(--lift-1);
+  }
+
+  /* selected plan card */
+  .plan-panel {
+    position: relative; margin-top: var(--s4); padding: var(--s5) var(--s4) var(--s4);
+    background: var(--white); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--lift-2);
+  }
+  .plan-panel[hidden] { display: none; }
+  .plan-panel:not([hidden]) { animation: panelIn .35s var(--ease); }
+  @keyframes panelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .plan-panel--featured { border: 2px solid var(--deep); }
+  .plan-panel h3 { font-size: 1.3rem; }
+  .plan-panel .price { margin-top: var(--s2); }
+  .plan-panel .price strong { font-size: clamp(2.8rem, 7vw, 3.6rem); }
+  .plan-desc { margin-top: var(--s2); color: var(--muted); font-size: 1.05rem; }
+  .plan-panel ul { list-style: none; display: grid; gap: 12px; margin-top: var(--s4); }
+  .plan-panel li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; line-height: 1.5; }
+  .plan-panel li svg { margin-top: 3px; color: var(--lavender); }
+  .plan-note { margin-top: var(--s3); color: var(--muted); font-size: .875rem; line-height: 1.55; }
+  .plan-panel .btn { width: 100%; min-height: 56px; margin-top: var(--s4); font-size: 1.05rem; }
+  .plan-panel li { overflow-wrap: anywhere; }
+  .guide-note { margin-top: var(--s2); color: var(--muted); font-size: .875rem; }
+  @media (min-width: 700px) { .plan-panel { padding: var(--s6) var(--s6) var(--s5); } }
+
+  /* free checklist, kept apart from the paid plans */
+  .free-card .free-kicker { color: var(--muted); font-size: .95rem; }
+  @media (min-width: 960px) { .free-card { margin-top: 14px; } }
+
+  .offer {
+    position: relative; display: flex; flex-direction: column; gap: var(--s3);
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s5) var(--s4) var(--s4);
+  }
+  .offer h3 { font-size: 1.15rem; }
+  .price { display: flex; align-items: baseline; gap: 6px; color: var(--deep); }
+  .price strong { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .price span { font-size: .95rem; color: var(--muted); }
+  .offer ul { list-style: none; display: grid; gap: 10px; font-size: .98rem; flex: 1; align-content: start; }
+  .offer li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; line-height: 1.45; }
+  .offer li svg { margin-top: 2px; color: var(--lavender); }
+  .offer .btn { margin-top: var(--s2); }
+
+  .badge {
+    position: absolute; top: -13px; left: var(--s4);
+    background: var(--white); color: var(--deep); font-size: .8rem; font-weight: 600;
+    padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); box-shadow: var(--lift-1);
+  }
+  .offer-note { margin-top: var(--s5); text-align: center; color: var(--muted); }
+  .offer-note a { color: var(--deep); font-weight: 600; text-underline-offset: 3px; }
+  .offer-note a:hover { color: var(--plum); }
+
+  /* ---------- How it works ---------- */
+  .steps { list-style: none; display: grid; gap: var(--s5); position: relative; counter-reset: step; }
+  .step { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: var(--s3); align-items: start; }
+  .step-num {
+    position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 50%;
+    background: var(--white); border: 2px solid var(--deep); color: var(--deep);
+    display: grid; place-items: center; font-weight: 800; font-size: 1.2rem; box-shadow: var(--lift-1);
+  }
+  .step:last-child .step-num { background: var(--deep); color: var(--white); }
+  .step h3 { padding-top: 14px; }
+  .steps-path { position: absolute; z-index: 0; pointer-events: none; }
+  .steps-path--mob { left: 27px; top: 56px; bottom: 56px; width: 2px; background-image: linear-gradient(var(--lavender) 50%, transparent 50%); background-size: 2px 10px; opacity: .55; }
+  .steps-path--desk { display: none; }
+  @media (min-width: 900px) {
+    .steps { grid-template-columns: repeat(4, 1fr); gap: var(--s4); }
+    .step { grid-template-columns: 1fr; gap: var(--s4); }
+    .step h3 { padding-top: 0; max-width: 18ch; }
+    .steps-path--mob { display: none; }
+    .steps-path--desk { display: block; left: 28px; right: 0; top: -10px; height: 80px; width: calc(100% - 28px); }
+  }
+
+  /* ---------- Mentor ---------- */
+  .mentor { background: var(--white); border-block: 1px solid var(--line); position: relative; overflow: hidden; }
+  .p-accent {
+    position: absolute; right: 3vw; top: 24px; font-weight: 800; font-size: clamp(220px, 30vw, 420px); line-height: .8;
+    color: var(--deep); opacity: .045; pointer-events: none; user-select: none; letter-spacing: -0.04em;
+  }
+  .mentor-grid { position: relative; display: grid; gap: var(--s6); align-items: center; }
+  .mentor-photo { border-radius: var(--r-img); overflow: hidden; aspect-ratio: 4 / 5; box-shadow: var(--lift-2); max-width: 460px; }
+  .mentor-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
+  .creds { list-style: none; display: grid; gap: var(--s3); margin-top: var(--s4); }
+  .creds li { display: grid; grid-template-columns: 24px 1fr; gap: 12px; line-height: 1.5; }
+  .creds svg { color: var(--lavender); margin-top: 3px; }
+  .creds strong { font-weight: 600; color: var(--deep); }
+  .bio { margin-top: var(--s5); padding-left: var(--s4); border-left: 3px solid var(--lavender); max-width: 62ch; }
+  @media (min-width: 900px) { .mentor-grid { grid-template-columns: .9fr 1.1fr; gap: var(--s7); } }
+
+  .proof { position: relative; margin-top: var(--s7); }
+  .proof h3 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+  .proof-sub { color: var(--muted); margin-top: 6px; }
+  .proof-strip { list-style: none; display: grid; gap: var(--s4); margin-top: var(--s4); }
+  @media (min-width: 640px) { .proof-strip { grid-template-columns: repeat(3, 1fr); } }
+  .proof figure { margin: 0; }
+  .proof-img { aspect-ratio: 4 / 3; border-radius: var(--r-card); overflow: hidden; background: var(--mist); box-shadow: var(--lift-1); }
+  .proof-img img { width: 100%; height: 100%; object-fit: cover; }
+  .proof figcaption { margin-top: 12px; font-size: .95rem; font-weight: 600; color: var(--deep); line-height: 1.4; }
+
+  /* ---------- Guide ---------- */
+  .guide-card {
+    display: grid; gap: var(--s5); background: var(--white); border: 1px solid var(--line); border-radius: 24px;
+    padding: var(--s5) var(--s4); box-shadow: var(--lift-2);
+  }
+  .guide-cover {
+    position: relative; aspect-ratio: 3 / 4; max-width: 280px; width: 100%; border-radius: 12px; overflow: hidden; isolation: isolate;
+    background: var(--gradient); color: var(--white); padding: var(--s4); display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(35,26,73,.15), 0 30px 50px -20px rgba(35,26,73,.55);
+    justify-self: center;
+  }
+  .guide-cover img { height: 18px; width: auto; align-self: flex-start; }
+  .guide-cover strong { font-size: 1.55rem; font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; }
+  .guide-cover small { font-size: .8rem; opacity: .85; }
+  .guide-list { list-style: none; display: grid; gap: 10px; margin-top: var(--s4); }
+  @media (min-width: 640px) { .guide-list { grid-template-columns: 1fr 1fr; column-gap: var(--s4); } }
+  .guide-list li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; line-height: 1.45; font-size: 1rem; }
+  .guide-list svg { color: var(--lavender); margin-top: 2px; }
+  .guide-buy { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4); margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--line); }
+  .guide-buy .price strong { font-size: 2.4rem; }
+  .launch { font-size: .85rem; font-weight: 600; color: var(--deep); background: var(--mist); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+  @media (min-width: 900px) {
+    .guide-card { grid-template-columns: 300px 1fr; padding: var(--s6); gap: var(--s6); align-items: center; }
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-list { max-width: 820px; border-top: 1px solid var(--line); }
+  .faq-item { border-bottom: 1px solid var(--line); }
+  .faq-item h3 { font-size: 1.1rem; }
+  .faq-q {
+    width: 100%; display: flex; justify-content: space-between; align-items: center; gap: var(--s3);
+    padding: var(--s4) 0; background: none; border: 0; text-align: left; cursor: pointer;
+    font-family: inherit; font-weight: 600; font-size: 1.1rem; line-height: 1.35; color: var(--deep);
+  }
+  .faq-q:hover { color: var(--plum); }
+  .faq-q:active { opacity: .7; }
+  .faq-icon { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid currentColor; display: grid; place-items: center; transition: transform .4s var(--spring); }
+  .faq-q[aria-expanded="true"] .faq-icon { transform: rotate(45deg); }
+  .faq-a { padding: 0 0 var(--s4); max-width: 68ch; }
+  .faq-a[hidden] { display: none; }
+  .faq-a:not([hidden]) { animation: faqIn .35s var(--ease); }
+  .faq-a p + p, .faq-a p + .ph { margin-top: var(--s3); }
+  .faq-a strong { color: var(--deep); }
+  @keyframes faqIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Waitlist ---------- */
+  .waitlist-band {
+    position: relative; overflow: hidden; isolation: isolate; color: var(--white);
+    border-radius: 24px; padding: var(--s6) var(--s4);
+    display: grid; gap: var(--s4); align-items: center;
+    background: radial-gradient(60% 120% at 0% 0%, rgba(140,110,170,.4), transparent 60%), var(--gradient);
+    box-shadow: var(--lift-2);
+  }
+  .waitlist-band h2 { color: var(--white); font-size: clamp(1.6rem, 3.2vw, 2.25rem); max-width: 24ch; }
+  .waitlist-band p { color: rgba(255,255,255,.88); margin-top: var(--s2); }
+  @media (min-width: 900px) { .waitlist-band { grid-template-columns: 1fr auto; padding: var(--s6); } }
+
+  /* ---------- Final CTA + footer ---------- */
+  .final { position: relative; overflow: hidden; isolation: isolate; color: var(--white); background: var(--midnight); text-align: center; }
+  .final::before {
+    content: ""; position: absolute; inset: 0; z-index: -2;
+    background: radial-gradient(70% 80% at 50% 0%, rgba(98,74,122,.85), transparent 70%), linear-gradient(180deg, var(--deep), var(--midnight));
+  }
+  .final h2 { color: var(--white); max-width: 18ch; margin-inline: auto; }
+  .final p { margin: var(--s3) auto 0; max-width: 50ch; color: rgba(255,255,255,.85); font-size: 1.1rem; }
+  .final .btn { margin-top: var(--s5); }
+
+  .footer { background: var(--midnight); color: rgba(255,255,255,.82); padding-block: var(--s6) var(--s5); font-size: .95rem; border-top: 1px solid rgba(255,255,255,.1); }
+  .footer-top { display: grid; gap: var(--s5); }
+  .footer-brand img { height: 22px; width: auto; }
+  .footer-brand p { margin-top: var(--s3); max-width: 34ch; color: rgba(255,255,255,.85); }
+  .footer-links { list-style: none; display: grid; gap: 10px; }
+  .footer-links a { text-decoration: none; padding: 2px 0; display: inline-flex; align-items: center; gap: 10px; }
+  .footer-links a:hover { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
+  .footer-links a:active { opacity: .7; }
+  .footer-bottom { margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid rgba(255,255,255,.14); display: grid; gap: var(--s2); font-size: .85rem; color: rgba(255,255,255,.72); }
+  @media (min-width: 760px) {
+    .footer-top { grid-template-columns: 1fr auto; align-items: start; }
+    .footer-bottom { grid-template-columns: auto 1fr; gap: var(--s5); }
+    .footer-bottom p:last-child { text-align: right; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- SVG sprite: icons -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 20 20"><path d="M4 10.5l3.5 3.5L16 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 20 20"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-partial" viewBox="0 0 20 20"><path d="M5 10h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 2.5a7 7 0 0 0-7 7c0 5.2 7 12 7 12s7-6.8 7-12a7 7 0 0 0-7-7z" fill="currentColor"/><circle cx="12" cy="9.5" r="2.6" fill="#fff"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/></filter>
+  </defs>
+</svg>
+
+<!-- 1. NAVBAR -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="#top" aria-label="Pathfinder, back to top">
+      <img src="brand_assets/Pathfinder_logo_morado.png" alt="Pathfinder" width="2506" height="454">
+    </a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="#offers">Offers</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-primary nav-cta" href="https://cal.com/pathfindermentoring/1-1-session">Book a session</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu"><span class="bar"></span></button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <nav class="wrap" aria-label="Mobile">
+      <ul>
+        <li><a href="#offers">Offers</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a class="btn btn-primary" href="https://cal.com/pathfindermentoring/1-1-session">Book a session</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- 2. HERO -->
+<section class="hero on-dark" id="top" aria-labelledby="hero-title">
+  <svg class="grain" aria-hidden="true" width="100%" height="100%"><rect width="100%" height="100%" filter="url(#noise)"/></svg>
+  <!-- path icon: dotted route that ends at the portrait -->
+  <svg class="hero-path hero-path--desk" viewBox="0 0 400 520" preserveAspectRatio="none" fill="none" aria-hidden="true">
+    <path d="M-60 500 C 40 470, 30 380, 110 360 S 170 300, 160 220 S 230 90, 330 40" stroke="rgba(255,255,255,.35)" stroke-width="2.5" stroke-dasharray="2 10" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  </svg>
+
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <p class="pilot-note"><span class="dot" aria-hidden="true">P</span>Pilot: one mentor, one goal</p>
+      <h1 id="hero-title">Talk to someone who already did what you want to do.</h1>
+      <p class="hero-sub">I won an Erasmus Mundus scholarship. Now I review motivation letters and help applicants prepare theirs, with feedback from someone who has been through the process.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-light" href="https://cal.com/pathfindermentoring/motivation-letter-review">Get your letter reviewed</a>
+        <!-- HIDDEN until the checklist PDF is ready:
+        <a class="btn btn-ghost-light" href="#LINK_CHECKLIST">Free application checklist</a>
+        -->
+      </div>
+    </div>
+    <div class="hero-photo">
+      <div class="hero-frame">
+        <img src="brand_assets/photos/hero_portrait.jpeg" alt="Patricia, the Pathfinder mentor, standing in front of a glass building and looking at the camera" width="1066" height="1600" fetchpriority="high">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. THE PROBLEM -->
+<section class="section" aria-labelledby="problem-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="problem-title">Studying abroad is a big decision. Good guidance is hard to find.</h2>
+      <p class="lede">Many people decide to apply without reliable advice. The usual places to look each leave a gap.</p>
+    </div>
+    <div class="problem-grid">
+      <ul class="sources">
+        <li class="source">
+          <span class="source-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9.5 10a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
+          </span>
+          <div><h3>Reddit</h3><p>Lots of opinions, but you can't tell who actually got the scholarship.</p></div>
+        </li>
+        <li class="source">
+          <span class="source-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>
+          </span>
+          <div><h3>Official guides</h3><p>Accurate rules, but no personal advice on your profile or your documents.</p></div>
+        </li>
+        <li class="source">
+          <span class="source-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          </span>
+          <div><h3>LinkedIn DMs</h3><p>The right people are there, but messages to strangers rarely get answered.</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4. OFFERS -->
+<section class="section offers" id="offers" aria-labelledby="offers-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="offers-title">Choose the help you need</h2>
+      <p class="lede">Ask questions in a session, or get detailed feedback on your application.</p>
+    </div>
+    <div class="plans">
+      <div class="plan-picker">
+        <div class="plan-tabs" role="tablist" aria-label="Choose a plan">
+          <button class="plan-tab" type="button" role="tab" id="tab-session" aria-controls="panel-session" aria-selected="false" tabindex="-1">
+            <span class="plan-tab-name">1:1 Session</span><span class="plan-tab-price">€30</span>
+          </button>
+          <button class="plan-tab" type="button" role="tab" id="tab-review" aria-controls="panel-review" aria-selected="true">
+            <span class="tab-badge">Most popular</span>
+            <span class="plan-tab-name">Letter review</span><span class="plan-tab-price">€70</span>
+          </button>
+          <button class="plan-tab" type="button" role="tab" id="tab-full" aria-controls="panel-full" aria-selected="false" tabindex="-1">
+            <span class="plan-tab-name">Full support</span><span class="plan-tab-price">€150</span>
+          </button>
+        </div>
+
+        <article class="plan-panel" id="panel-session" role="tabpanel" aria-labelledby="tab-session" hidden>
+          <h3>1:1 Session</h3>
+          <p class="price"><strong>€30</strong><span>· 45 min</span></p>
+          <p class="plan-desc">For when you’re exploring or have specific questions.</p>
+          <ul>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>45-min video call on Google Meet, in English or Spanish</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>A short form before the call, so I come prepared for your case</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>Ask anything: choosing programmes, requirements, documents, recommendation letters, English tests, real life in the programme</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>Follow-up email with your 3 concrete next steps</li>
+          </ul>
+          <a class="btn btn-primary" href="https://cal.com/pathfindermentoring/1-1-session">Book a session</a>
+          <p class="plan-note">Sessions don’t include reviewing documents. Upgrade to Letter Review or Full Support within 30 days and your €30 counts toward it.</p>
+        </article>
+
+        <article class="plan-panel plan-panel--featured" id="panel-review" role="tabpanel" aria-labelledby="tab-review">
+          <span class="badge">Most popular</span>
+          <h3>Motivation Letter Review</h3>
+          <p class="price"><strong>€70</strong></p>
+          <p class="plan-desc">For when you have a draft (or just ideas) and want your letter to stand out.</p>
+          <ul>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>20-min story call: we find what in your story should lead your letter</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>Round 1: detailed comments directly on your document (structure, what to cut, what’s missing, what sounds generic), within 5 business days</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>Round 2: I review your revised version, within 5 business days</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>The Erasmus Mundus Application Guide (sent to you as soon as it’s released)</li>
+          </ul>
+          <a class="btn btn-primary" href="https://cal.com/pathfindermentoring/motivation-letter-review">Get your letter reviewed</a>
+          <p class="plan-note">This is a review, not a ghostwriting service: the letter stays yours.</p>
+        </article>
+
+        <article class="plan-panel" id="panel-full" role="tabpanel" aria-labelledby="tab-full" hidden>
+          <h3>Full Application Support</h3>
+          <p class="price"><strong>€150</strong></p>
+          <p class="plan-desc">For when you want someone by your side through the whole application.</p>
+          <ul>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>45-min kickoff call: programmes, timeline and documents plan</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>Motivation letter review: story call + 2 rounds of written feedback</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>CV review: written comments on your CV</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>Recommendation letter strategy: who to ask, how to ask, and what to send them</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>The Erasmus Mundus Application Guide (sent to you as soon as it’s released)</li>
+            <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>20-min final call before you submit</li>
+          </ul>
+          <a class="btn btn-primary" href="https://cal.com/pathfindermentoring/full-application-support">Get full support</a>
+          <p class="plan-note">Bought separately, the Session and Letter Review cost €100. Here you also get the CV review, recommendation strategy, final call and the guide as soon as it’s released. Limited spots each month so every applicant gets real attention.</p>
+        </article>
+      </div>
+
+      <!-- FREE CHECKLIST CARD (HIDDEN until the PDF is ready). To show it again, remove this
+           comment line and the "END HIDDEN CHECKLIST" line, and restore the 2-column .plans rule in the CSS.
+      <aside class="offer free-card" aria-labelledby="free-title">
+        <p class="free-kicker">Just getting started?</p>
+        <h3 id="free-title">Free Application Checklist</h3>
+        <p class="price"><strong>€0</strong></p>
+        <ul>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Every document you need</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>The order to prepare them in</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Common mistakes to avoid</li>
+        </ul>
+        <a class="btn btn-outline btn-block" href="#LINK_CHECKLIST">Download free</a>
+      </aside>
+      END HIDDEN CHECKLIST -->
+    </div>
+    <p class="offer-note">Not sure which one? <a href="https://cal.com/pathfindermentoring/1-1-session">Start with a session.</a></p>
+  </div>
+</section>
+
+<!-- 5. HOW IT WORKS -->
+<section class="section" id="how-it-works" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="how-title">How it works</h2>
+    </div>
+    <div style="position:relative">
+      <span class="steps-path steps-path--mob" aria-hidden="true"></span>
+      <svg class="steps-path steps-path--desk" viewBox="0 0 1000 80" preserveAspectRatio="none" fill="none" aria-hidden="true">
+        <path d="M0 38 C 120 10, 200 66, 300 38 S 480 10, 560 38 S 740 66, 820 38" stroke="#624A7A" stroke-opacity=".5" stroke-width="2.5" stroke-dasharray="2 10" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <ol class="steps">
+        <li class="step"><span class="step-num" aria-hidden="true">1</span><h3>Choose your offer</h3></li>
+        <li class="step"><span class="step-num" aria-hidden="true">2</span><h3>Tell me your goal and share your documents</h3></li>
+        <li class="step"><span class="step-num" aria-hidden="true">3</span><h3>Get personal guidance from someone who did it</h3></li>
+        <li class="step"><span class="step-num" aria-hidden="true"><svg width="24" height="24" style="color:#fff"><use href="#i-pin"/></svg></span><h3>Apply with confidence</h3></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 6. MEET YOUR MENTOR -->
+<section class="section mentor" id="about" aria-labelledby="about-title">
+  <span class="p-accent" aria-hidden="true">P</span>
+  <div class="wrap">
+    <div class="mentor-grid">
+      <div class="mentor-photo">
+        <img src="brand_assets/photos/web/mentor_emmie.jpg" alt="Patricia standing next to the EMMIE Erasmus Mundus Master in Impact Entrepreneurship banner" width="1100" height="1467" loading="lazy">
+      </div>
+      <div>
+        <h2 id="about-title">Meet your mentor</h2>
+        <p class="lede">Hi, I'm Patricia. For now, I'm the only mentor on Pathfinder.</p>
+        <ul class="creds">
+          <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg><span><strong>Erasmus Mundus scholarship recipient</strong></span></li>
+          <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg><span><strong>EMMIE master's in Impact Entrepreneurship</strong>, studying in Zagreb, Vilnius and Liège</span></li>
+          <li><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg><span><strong>Entrepreneurship mentor at ZSEM</strong></span></li>
+        </ul>
+        <p class="bio">I’m from Peru, and I know how confusing the Erasmus Mundus application can feel when you’re doing it alone. After I was selected for the EMMIE master’s, people kept messaging me on LinkedIn asking how I did it, so I started Pathfinder to give them real answers. I’ll help you understand the process, strengthen your motivation letter and decide if this path is right for you.</p>
+      </div>
+    </div>
+
+    <div class="proof">
+      <h3>Proof, not promises</h3>
+      <p class="proof-sub">The achievement behind the advice.</p>
+      <ul class="proof-strip">
+        <li><figure>
+          <div class="proof-img"><img src="brand_assets/photos/web/proof_flags.jpg" alt="Patricia smiling and holding her Erasmus Mundus scholarship certificate at the award ceremony, next to the European Union flag" width="1360" height="1000" loading="lazy" style="object-position:60% 40%"></div>
+          <figcaption>Erasmus Mundus scholarship award, Lima 2025</figcaption>
+        </figure></li>
+        <li><figure>
+          <div class="proof-img"><img src="brand_assets/photos/web/proof_certificate.jpg" alt="Erasmus+ certificate recognising Patricia Alejandra Flores Mori as an Erasmus Mundus scholarship holder, signed in Lima on 13 August 2025" width="1000" height="1333" loading="lazy" style="object-position:50% 52%"></div>
+          <figcaption>Official scholarship certificate</figcaption>
+        </figure></li>
+        <li><figure>
+          <div class="proof-img"><img src="brand_assets/photos/web/proof_zsem_mentor.jpg" alt="Patricia wearing a ZSEM mentor badge in a classroom while students work in the background" width="1000" height="1333" loading="lazy" style="object-position:55% 45%"></div>
+          <figcaption>Entrepreneurship mentor at ZSEM</figcaption>
+        </figure></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 7. DIGITAL GUIDE (HIDDEN FOR NOW)
+     To show it again: delete this comment's opening line and the "END HIDDEN GUIDE" line below.
+<section class="section" aria-labelledby="guide-title">
+  <div class="wrap">
+    <article class="guide-card">
+      <div class="guide-cover on-dark" aria-hidden="true">
+        <img src="brand_assets/Pathfinder_logo_blanco.png" alt="" width="2506" height="454">
+        <strong>The Erasmus Mundus Application Guide</strong>
+        <small>PDF guide</small>
+      </div>
+      <div>
+        <h2 id="guide-title" style="font-size:clamp(1.8rem,3.4vw,2.5rem)">The Erasmus Mundus Application Guide</h2>
+        <p class="lede">A PDF with everything I learned writing my own application. Here's what's inside:</p>
+        <ul class="guide-list">
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Motivation letter structure, section by section</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>My real motivation letter, annotated paragraph by paragraph</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Before/after examples and the most common mistakes</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>AI prompts to brainstorm and get feedback, without sounding like AI</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Self-review checklist before you submit</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>IELTS tips + AI prompts to practise speaking and writing</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Recommendation letters: who to ask, how to ask, email template</li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>CV template with examples</li>
+        </ul>
+        <div class="guide-buy">
+          <p class="price"><strong>€15</strong></p>
+          <span class="launch">Launch price</span>
+          <a class="btn btn-primary" href="#LINK_GUIDE">Get the guide</a>
+        </div>
+        <p class="guide-note">Instant download after payment.</p>
+      </div>
+    </article>
+  </div>
+</section>
+END HIDDEN GUIDE -->
+
+<!-- 9. FAQ -->
+<section class="section" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <div class="section-head"><h2 id="faq-title">Questions</h2></div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="a1" id="q1">What should I prepare?<span class="faq-icon" aria-hidden="true"><svg width="16" height="16"><use href="#i-plus"/></svg></span></button></h3>
+        <div class="faq-a" id="a1" role="region" aria-labelledby="q1" hidden><p>When you book, you’ll answer a few short questions about your goal, the programmes you’re considering and where you are in the process. Come with your top 3 questions. For a letter review, just send your current draft, even if it’s rough.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="a2" id="q2">What language are sessions in?<span class="faq-icon" aria-hidden="true"><svg width="16" height="16"><use href="#i-plus"/></svg></span></button></h3>
+        <div class="faq-a" id="a2" role="region" aria-labelledby="q2" hidden><p>English or Spanish, whichever you’re more comfortable with. Written feedback can also be in either language.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="a3" id="q3">How does the letter review work, and how long does it take?<span class="faq-icon" aria-hidden="true"><svg width="16" height="16"><use href="#i-plus"/></svg></span></button></h3>
+        <div class="faq-a" id="a3" role="region" aria-labelledby="q3" hidden><p>After booking, we start with a 20-min story call to understand your background and goals. Then you share your letter as a Google Doc or Word file, and I leave detailed comments directly on it within 5 business days. You revise it and send it back for a second round, also within 5 business days.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="a4" id="q4">What is your refund policy?<span class="faq-icon" aria-hidden="true"><svg width="16" height="16"><use href="#i-plus"/></svg></span></button></h3>
+        <div class="faq-a" id="a4" role="region" aria-labelledby="q4" hidden><p>You can cancel or reschedule up to 24 hours before the call for a full refund. If I haven’t started your letter review yet, you can also get a full refund.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="a5" id="q5">Does this guarantee the scholarship?<span class="faq-icon" aria-hidden="true"><svg width="16" height="16"><use href="#i-plus"/></svg></span></button></h3>
+        <div class="faq-a" id="a5" role="region" aria-labelledby="q5" hidden>
+          <p><strong>No.</strong> Nobody can guarantee a scholarship, and you should be careful with anyone who promises one. What I can do is share what worked for me, give you honest feedback and help you submit the strongest application you can.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. WAITLIST (HIDDEN for now). To show it again, remove this comment line and the "END HIDDEN WAITLIST" line.
+<section class="section" style="padding-top:0" aria-labelledby="wait-title">
+  <div class="wrap">
+    <div class="waitlist-band on-dark">
+      <div>
+        <h2 id="wait-title">Want to talk to someone who achieved a different goal?</h2>
+        <p>More mentors are coming soon.</p>
+      </div>
+      <a class="btn btn-light" href="#LINK_WAITLIST">Join the waitlist</a>
+    </div>
+  </div>
+</section>
+END HIDDEN WAITLIST -->
+
+<!-- 11. FINAL CTA -->
+<section class="section final on-dark" aria-labelledby="final-title">
+  <svg class="grain" aria-hidden="true" width="100%" height="100%" style="position:absolute;inset:0;z-index:-1"><rect width="100%" height="100%" filter="url(#noise)"/></svg>
+  <div class="wrap">
+    <h2 id="final-title">Your motivation letter, read by someone who won the scholarship.</h2>
+    <p>Two rounds of written feedback on your document, plus the Erasmus Mundus Application Guide (coming soon).</p>
+    <a class="btn btn-light" href="https://cal.com/pathfindermentoring/motivation-letter-review">Get your letter reviewed</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer on-dark">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="brand_assets/Pathfinder_logo_blanco.png" alt="Pathfinder" width="2506" height="454" loading="lazy">
+        <p>Talk to someone who already did what you want to do.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="mailto:patriciaflores.mori@gmail.com">patriciaflores.mori@gmail.com</a></li>
+        <li><a href="https://www.instagram.com/journaldepaty/">Instagram</a></li>
+        <li><a href="https://www.linkedin.com/in/patricia-floresmo/">LinkedIn</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Pathfinder</p>
+      <p>Pathfinder is an independent initiative and is not affiliated with the European Union or the Erasmus+ programme.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu
+  (function () {
+    var btn = document.querySelector('.menu-btn');
+    var menu = document.getElementById('mobile-menu');
+    function setOpen(open) {
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      menu.hidden = !open;
+    }
+    btn.addEventListener('click', function () { setOpen(menu.hidden); });
+    menu.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { setOpen(false); btn.focus(); } });
+  })();
+
+  // Plan selector (tabs)
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.plan-tab'));
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    }
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () { select(tab); });
+      tab.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+        if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+        if (e.key === 'Home') next = tabs[0];
+        if (e.key === 'End') next = tabs[tabs.length - 1];
+        if (next) { e.preventDefault(); select(next); next.focus(); }
+      });
+    });
+  })();
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(function (q) {
+    q.addEventListener('click', function () {
+      var open = q.getAttribute('aria-expanded') === 'true';
+      q.setAttribute('aria-expanded', String(!open));
+      document.getElementById(q.getAttribute('aria-controls')).hidden = open;
+    });
+  });
+</script>
+</body>
+</html>
